@@ -6,7 +6,7 @@
 ## Installation via Conda (recommended)
 
 We recommend installing **FMAlign2** with **conda**.
-By default, the Conda environment installs three MSA methods: [MAFFT](https://mafft.cbrc.jp/alignment/software/), HAlign3, and [HAlign4](https://github.com/metaphysicser/HAlign-4). Since FMAlign2 can integrate with any MSA method and supports custom parameters, Conda provides a convenient way to manage dependencies and install alternative MSA tools.
+By default, the Conda environment installs three MSA methods: [MAFFT](https://mafft.cbrc.jp/alignment/software/), HAlign3, and [HAlign4](https://github.com/pinglu-zhang/HAlign-4). Since FMAlign2 can integrate with any MSA method and supports custom parameters, Conda provides a convenient way to manage dependencies and install alternative MSA tools.
 
 ```bash
 conda create -n fmalign2_env
@@ -163,7 +163,7 @@ halign -h
 ### System-wide installation (with sudo)
 
 ```bash
-git clone https://github.com/metaphysicser/HAlign-4.git
+git clone https://github.com/pinglu-zhang/HAlign-4.git
 cd HAlign-4
 make -j
 sudo install -m 0755 halign4 /usr/local/bin/
@@ -175,7 +175,7 @@ halign4 -h
 ### **User installation (no sudo)**
 
 ```bash
-git clone https://github.com/metaphysicser/HAlign-4.git
+git clone https://github.com/pinglu-zhang/HAlign-4.git
 cd HAlign-4
 make -j
 
@@ -205,7 +205,7 @@ After installation, both `halign3` and `halign4` will be available in your syste
 #### 1) Clone and build
 
 ```bash
-git clone https://github.com/metaphysicser/FMAlign2
+git clone https://github.com/pinglu-zhang/FMAlign2
 cd FMAlign2
 
 # Build (default: optimized; Linux defaults to static linking if available)
@@ -279,4 +279,5 @@ Pinglu Zhang, Huan Liu, Yanming Wei, Yixiao Zhai, Qinzhong Tian, Quan Zou, FMAli
 
 ## License
 
-[Apache 2.0](https://github.com/metaphysicser/FMAlign2/blob/master/LICENSE) © [[MALABZ_UESTC](https://github.com/malabz) [Pinglu Zhang](https://github.com/metaphysicser)]
+[Apache 2.0](https://github.com/pinglu-zhang/FMAlign2/blob/master/LICENSE) © [[MALABZ_UESTC](https://github.com/malabz) [Pinglu Zhang](https://github.com/pinglu-zhang)]
+
