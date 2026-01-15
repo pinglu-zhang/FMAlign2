@@ -16,17 +16,10 @@ conda install -c malab fmalign2
 
 ## Usage
 
-if you are Linux user:
-
    ```shell
    FMAlign2 -i /path/to/input.fasta -o /path/to/output.fasta [other options]
    ```
 
-if you are Windows user:
-
-   ```shell
-   FMAlign2.exe -i /path/to/input.fasta -o /path/to/output.fasta [other options]
-   ```
 
 ### Parameter Details
 
