@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
     parser.add_argument("o", true, "/path/to/output.fasta");
     parser.add_argument_help("o", "The path to the output fasta file.");
     parser.add_argument("p", false, "mafft");
-    parser.add_argument_help("p", "MSA method (mafft, halign3, halign4) or Path to MSA command file.");
+    parser.add_argument_help("p", "MSA method (mafft, clustalo, halign3, halign4) or Path to MSA command file.");
 
     parser.add_argument("t", false, "max_cpu_num");
     parser.add_argument_help("t", "The maximum number of threads that the program runs, the recommended setting is the number of CPUs.");
@@ -195,6 +195,9 @@ int main(int argc, char** argv) {
         std::string cmd_path = parser.get("p");
         if (cmd_path == "mafft") {
 			cmd_template = "mafft --thread {thread} {input} > {output}";
+        }
+        else if (cmd_path == "clustalo") {
+            cmd_template = "clustalo -i {input} -o {output} --threads {thread}";
         }
         else if (cmd_path == "halign3") {
             cmd_template = "halign -t {thread} -o {output} {input}";
