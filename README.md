@@ -6,7 +6,7 @@
 ## Installation via Conda (recommended)
 
 We recommend installing **FMAlign2** with **conda**.
-By default, the Conda environment installs three MSA methods: [MAFFT](https://mafft.cbrc.jp/alignment/software/), HAlign3, and [HAlign4](https://github.com/pinglu-zhang/HAlign-4). Since FMAlign2 can integrate with any MSA method and supports custom parameters, Conda provides a convenient way to manage dependencies and install alternative MSA tools.
+By default, the Conda environment installs four MSA methods: [MAFFT](https://mafft.cbrc.jp/alignment/software/), [Clustal Omega](http://www.clustal.org/omega/), HAlign3, and [HAlign4](https://github.com/pinglu-zhang/HAlign-4). Since FMAlign2 can integrate with any MSA method and supports custom parameters, Conda provides a convenient way to manage dependencies and install alternative MSA tools.
 
 ```bash
 conda create -n fmalign2_env
@@ -38,7 +38,7 @@ if you are Windows user:
 
 * `-i <file>` **Required.** Path to the input FASTA file.
 * `-o <file>` **Required.** Path to the output FASTA file.
-* `-p <method|file>` (default: `mafft`). MSA backend — `mafft`, `halign3`, or `halign4` — or a path to a custom MSA command file.
+* `-p <method|file>` (default: `mafft`). MSA backend — `mafft`, `clustalo`, `halign3`, or `halign4` — or a path to a custom MSA command file.
 * `-t <int>` (default: number of available CPU cores). Maximum number of threads to use.
 * `-l <int>` (default: 30). Minimum MEM length.
 * `-f <mode>` (default: `accurate`). MEM filtering mode; use `fast` to speed up at the cost of sensitivity.
@@ -94,6 +94,7 @@ You can build FMAlign2 from source on Linux and Windows (MSYS2/MinGW). Below are
 * **Recommended runtime tools** (pick any you plan to use):
 
   * **MAFFT** (for `-p mafft`), writes alignment to **stdout**
+  * **Clustal Omega** (for `-p clustalo`), supports `-o <file>` natively
   * **HAlign3 / HAlign4** (for `-p halign3` / `-p halign4`)
   * **OpenJDK 11** (only needed if you use the HAlign JAR fallback)
 
@@ -106,10 +107,62 @@ Install examples:
 
 ```bash
 sudo apt update
-# Optional runtime dependency
-sudo apt install -y mafft
+# Optional runtime dependencies
+sudo apt install -y mafft clustalo
 # Or via conda
-# conda install -c conda-forge -c bioconda mafft halign openjdk=11
+# conda install -c conda-forge -c bioconda mafft clustalo halign openjdk=11
+```
+
+---
+
+## Install Clustal Omega
+
+### System-wide installation (with sudo)
+
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install -y clustalo
+
+# Fedora/RHEL/CentOS
+sudo yum install -y clustal-omega
+
+# Test
+clustalo --version
+```
+
+### **User installation (no sudo)**
+
+#### Via Conda (recommended)
+
+```bash
+# Create a new environment or use existing one
+conda create -n fmalign2_env
+conda activate fmalign2_env
+conda install -c bioconda clustalo
+
+# Test
+clustalo --version
+```
+
+#### From Source
+
+```bash
+# Download and compile from source
+cd $HOME
+wget http://www.clustal.org/omega/clustal-omega-1.2.4.tar.gz
+tar -xzf clustal-omega-1.2.4.tar.gz
+cd clustal-omega-1.2.4
+./configure --prefix=$HOME/local
+make -j
+make install
+
+# Add to PATH
+export PATH=$HOME/local/bin:$PATH
+# Add the above line to ~/.bashrc to make it permanent
+
+# Test
+clustalo --version
 ```
 
 ---
@@ -259,8 +312,9 @@ fmalign2 -h
 
 FMAlign2 can use:
 
-* **MAFFT** (`-p mafft`) — **writes to stdout** → FMAlign2 redirects to your `-o` file
-* **HAlign3/HAlign4** (`-p halign3`, `-p halign4`) — support `-o <file>` natively
+* **MAFFT** (`-p mafft`)
+* **Clustal Omega** (`-p clustalo`) 
+* **HAlign3/HAlign4** (`-p halign3`, `-p halign4`) 
 * **Custom command file** (`-p /path/to/cmd.txt`) — must include `{input}`, `{output}`, and optional `{thread}` placeholders
 
 
