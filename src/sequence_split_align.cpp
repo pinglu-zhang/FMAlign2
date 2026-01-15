@@ -62,6 +62,45 @@ std::string generateRandomString(int length) {
 #endif
 }
 
+/**
+* @brief Checks if all sequences in a FASTA file have the same length.
+* @param file_name The name of the FASTA file to check.
+* @return True if all sequences have the same length, false otherwise or if file is empty.
+*/
+bool checkAllSequencesSameLength(const std::string& file_name) {
+    std::vector<std::string> sequences;
+    std::vector<std::string> names;
+
+    try {
+        read_data(file_name.c_str(), sequences, names, false);
+
+        if (sequences.empty()) {
+            return false;
+        }
+
+        // Remove gaps from sequences for accurate length comparison
+        size_t first_length = 0;
+        for (char c : sequences[0]) {
+            if (c != '-') first_length++;
+        }
+
+        for (size_t i = 1; i < sequences.size(); i++) {
+            size_t current_length = 0;
+            for (char c : sequences[i]) {
+                if (c != '-') current_length++;
+            }
+            if (current_length != first_length) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    catch (...) {
+        return false;
+    }
+}
+
 std::string buildCommand(std::string cmdTemplate,
     const std::string& inputPath,
     const std::string& outputPath,
@@ -761,9 +800,22 @@ std::string align_fasta(std::string file_name) {
     // Construct command string based on selected alignment package and operating system
     std::string cmd_temp = global_args.package;
 
-
-    
     std::string res_file_name = file_name.substr(0, file_name.find(".fasta")) + ".aligned.fasta";
+
+    // Check if all sequences have the same length
+    if (checkAllSequencesSameLength(file_name)) {
+        // All sequences have the same length, skip alignment and copy input to output
+        std::ifstream src(file_name, std::ios::binary);
+        std::ofstream dst(res_file_name, std::ios::binary);
+        dst << src.rdbuf();
+        src.close();
+        dst.close();
+
+
+        return res_file_name;
+    }
+
+    // Sequences have different lengths, proceed with alignment
     std::string cmnd = buildCommand(cmd_temp, file_name, res_file_name, t_int);
 
     try {
