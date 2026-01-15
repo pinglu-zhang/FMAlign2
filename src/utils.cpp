@@ -143,34 +143,37 @@ bool access_file(const char* data_path){
  * @param sequence The input DNA sequence to be cleaned.
  * @return The cleaned DNA sequence as a new string.
 */
-std::string clean_sequence(std::string sequence){
+#include <random>
+#include <string>
+
+std::string clean_sequence(std::string sequence) {
     std::string result;
     result.reserve(sequence.size());
+
+    // 随机数引擎 & 分布，只初始化一次
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_int_distribution<> distrib(0, 3); // 0~4 对应 A/C/G/T/U
+    static const char bases[5] = {'A', 'C', 'G', 'T'};
+
     for (char& c : sequence) {
         if (c == 'a' || c == 'A') {
-            c = 'A';
-            result.push_back(c);
+            result.push_back('A');
         } else if (c == 'c' || c == 'C') {
-            c = 'C';
-            result.push_back(c);
+            result.push_back('C');
         } else if (c == 'g' || c == 'G') {
-            c = 'G';
-            result.push_back(c);
+            result.push_back('G');
         } else if (c == 't' || c == 'T') {
-            c = 'T';
-            result.push_back(c);
+            result.push_back('T');
+        } else if (c == 'u' || c == 'U') {
+            result.push_back('U');
+        } else {
+            result.push_back('N');
         }
-        else if (c == 'u' || c == 'U') {
-            c = 'U';
-            result.push_back(c);
-        }
-        else {
-            c = 'N';
-            result.push_back(c);
-        }
-    } 
+    }
     return result;
 }
+
 
 void ArgParser::add_argument(const std::string& name, bool required = false, const std::string& default_value = "") {
     if (args_.count(name) > 0) {

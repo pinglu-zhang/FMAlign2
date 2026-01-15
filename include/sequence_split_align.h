@@ -35,7 +35,16 @@
 #include <random>
 #include <climits>
 
-const std::string TMP_FOLDER = "./temp/";
+inline std::string TMP_FOLDER() {
+    std::string folder = global_args.temp_folder;
+    if (!folder.empty() && folder.back() != '/' && folder.back() != '\\') {
+        folder += '/';
+    }
+    return folder;
+}
+
+std::string generateRandomString(int length = 10);
+
 std::string buildCommand(std::string cmdTemplate,
     const std::string& inputPath,
     const std::string& outputPath,

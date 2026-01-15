@@ -186,15 +186,15 @@ void split_and_parallel_align(std::vector<std::string> data, std::vector<std::st
     timer.reset();
 
     // Create temporary file folder (if it doesn't already exist)
-    if (0 != access(TMP_FOLDER.c_str(), 0))
+    if (0 != access(TMP_FOLDER().c_str(), 0))
     {
 #ifdef __linux__
-        if (0 != mkdir(TMP_FOLDER.c_str(), 0755)) {
-            std::cerr << "Fail to create file folder " << TMP_FOLDER << std::endl;
+        if (0 != mkdir(TMP_FOLDER().c_str(), 0755)) {
+            std::cerr << "Fail to create file folder " << TMP_FOLDER() << std::endl;
     }
 #else
-        if (0 != mkdir(TMP_FOLDER.c_str())) {
-            std::cerr << "Fail to create file folder " << TMP_FOLDER << std::endl;
+        if (0 != mkdir(TMP_FOLDER().c_str())) {
+            std::cerr << "Fail to create file folder " << TMP_FOLDER() << std::endl;
         }
 #endif
     }
@@ -681,7 +681,7 @@ void* parallel_align(void* arg) {
     const uint_t task_index = ptr->task_index;
     // Get the number of sequences in the data vector and the number of chains in the current chain
     uint_t seq_num = data.size();
-    std::string file_name = TMP_FOLDER + "task-" + std::to_string(task_index)+"_"+ random_file_end + ".fasta";
+    std::string file_name = TMP_FOLDER() + "task-" + std::to_string(task_index)+"_"+ random_file_end + ".fasta";
     std::ofstream file;
     file.open(file_name);
 
@@ -702,8 +702,25 @@ void* parallel_align(void* arg) {
         }       
     }
     file.close();
-    // Call the align_fasta function to align the sequences in the file
-    std::string res_file_name = align_fasta(file_name);
+
+    std::ifstream check_file(file_name, std::ios::ate | std::ios::binary);
+    if (!check_file.is_open()) {
+        std::cerr << "Failed to re-open " << file_name << " for checking." << std::endl;
+        exit(1);
+    }
+    std::streamsize size = check_file.tellg();
+    check_file.close();
+
+    std::string res_file_name;
+    if (size == 0) {
+    // 文件为空 → 创建一个空的结果文件
+        res_file_name = file_name.substr(0, file_name.find(".fasta")) + ".aligned.fasta";
+        std::ofstream empty_out(res_file_name);
+        empty_out.close();
+    } else {
+        // 文件非空 → 正常调用比对程序
+        res_file_name = align_fasta(file_name);
+    }
 
 
     std::vector<std::string> aligned_seq;
@@ -753,7 +770,7 @@ std::string align_fasta(std::string file_name) {
         // Execute the command and check for errors
         int res = system(cmnd.c_str());
         if (res != 0) {
-			std::cerr << "Error: command execution failed with exit code " << res << std::endl;
+			std::cerr << "Error: command execution failed with exit code " << res << " "<< file_name << std::endl;
             exit(1);
             
             
@@ -773,8 +790,8 @@ std::string align_fasta(std::string file_name) {
 */
 void delete_tmp_folder(uint_t task_count) {
     for (uint_t i = 0; i < task_count; i++) {
-        std::string file_name = TMP_FOLDER +"task-" + std::to_string(i) + "_" + random_file_end + ".fasta";
-        std::string res_file_name = TMP_FOLDER + "task-" + std::to_string(i) + "_" + random_file_end + ".aligned.fasta";
+        std::string file_name = TMP_FOLDER() +"task-" + std::to_string(i) + "_" + random_file_end + ".fasta";
+        std::string res_file_name = TMP_FOLDER() + "task-" + std::to_string(i) + "_" + random_file_end + ".aligned.fasta";
         if (remove(file_name.c_str()) != 0) {
             std::cerr << "Error deleting file " << file_name << std::endl;
         }
@@ -934,7 +951,7 @@ std::vector<std::vector<std::string>>::iterator seq2profile_align(uint_t seq_ind
         
         return concat_string.begin() + right_index + 1;
     }
-    std::string seq_file_name = TMP_FOLDER + "seq-" + std::to_string(seq_index) + "_" + random_file_end + ".fasta";
+    std::string seq_file_name = TMP_FOLDER() + "seq-" + std::to_string(seq_index) + "_" + random_file_end + ".fasta";
     std::ofstream file;
     file.open(seq_file_name);
     if (!file.is_open()) {
@@ -950,7 +967,7 @@ std::vector<std::vector<std::string>>::iterator seq2profile_align(uint_t seq_ind
 
     // create a file to store the profile of the sequences.
     sstream.str("");
-    std::string profile_file_name = TMP_FOLDER + "profile-" + std::to_string(seq_index) + "_" + random_file_end + ".fasta";
+    std::string profile_file_name = TMP_FOLDER() + "profile-" + std::to_string(seq_index) + "_" + random_file_end + ".fasta";
 
     file.open(profile_file_name);
 

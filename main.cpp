@@ -52,15 +52,15 @@ std::string readFile(const std::string& path) {
 
 
 int test_cmd(const std::string& cmdTemplate, int thread = 1) {
-    const fs::path tempDir = "./temp";
+    const fs::path tempDir = global_args.temp_folder;
     const fs::path inPath = tempDir / "tiny.fasta";
     const fs::path outPath = tempDir / "aligned.fasta";
 
     int rc = 0;  // 最终返回值（命令退出码或我们的错误码）
 
-    // 用 do{...}while(false) 做“单出口”
+    // 用 do{...}while(false) 做"单出口"
     do {
-        // 1) 创建 ./temp
+        // 1) 创建临时文件夹
         std::error_code ec;
         fs::create_directories(tempDir, ec);
         if (ec) {
@@ -111,11 +111,11 @@ ACGTACGA
 
     } while (false);
 
-    // 统一清理 ./temp（无论上面成功或失败）
+    // 统一清理临时文件夹（无论上面成功或失败）
     std::error_code delEc;
-    fs::remove_all("./temp", delEc);
+    fs::remove_all(global_args.temp_folder, delEc);
     if (delEc) {
-        std::cerr << "Warning: failed to remove ./temp: " << delEc.message() << "\n";
+        std::cerr << "Warning: failed to remove " << global_args.temp_folder << ": " << delEc.message() << "\n";
     }
 
     return rc;
@@ -140,7 +140,12 @@ int main(int argc, char** argv) {
     parser.add_argument_help("t", "The maximum number of threads that the program runs, the recommended setting is the number of CPUs.");
     parser.add_argument("l", false, "30");
     parser.add_argument_help("l", "The minimum length of MEM, the default value is 30.");
-   
+
+    // Generate a unique temp folder name with random suffix
+    std::string default_temp_folder = "./temp_" + generateRandomString(10);
+    parser.add_argument("w", false, default_temp_folder);
+    parser.add_argument_help("w", "The path to temporary folder, the default value is ./temp_<random>.");
+
 
     parser.add_argument("f", false, "accurate");
     parser.add_argument_help("f", "The filter MEMs mode. The default is accurate mode.");
@@ -183,6 +188,9 @@ int main(int argc, char** argv) {
         if (global_args.verbose != 0 && global_args.verbose != 1) {
             throw "verbose should be 1 or 0";
         }
+
+        global_args.temp_folder = parser.get("w");
+
         std::string cmd_template;
         std::string cmd_path = parser.get("p");
         if (cmd_path == "mafft") {
