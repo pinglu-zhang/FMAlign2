@@ -764,7 +764,7 @@ void* parallel_align(void* arg) {
 
     std::vector<std::string> aligned_seq;
     std::vector<std::string> aligned_name;
-    read_data(res_file_name.c_str(), aligned_seq, aligned_name, false);
+    read_data(res_file_name.c_str(), aligned_seq, aligned_name, false, false);
     std::vector<std::string> final_aligned_seq(seq_num, "");
     // Map the aligned sequences back to their original indices in the input data vector
     for (uint_t i = 0; i < aligned_seq_index.size(); i++) {
@@ -1084,7 +1084,7 @@ std::vector<std::vector<std::string>>::iterator seq2profile_align(uint_t seq_ind
     std::vector<std::string> align_res;
     std::vector<std::string> align_res_name;
     // Read data from a file and store it in the above vectors
-    read_data(profile_file_name.c_str(), align_res, align_res_name, false);
+    read_data(profile_file_name.c_str(), align_res, align_res_name, false, false);
 
     for (uint_t i = 0; i < selected_profile_seq_index.size(); i++) {
         concat_string[left_index][selected_profile_seq_index[i]] = align_res[i];

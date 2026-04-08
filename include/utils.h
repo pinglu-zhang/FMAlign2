@@ -140,9 +140,11 @@ private:
  * @param data_path   the path to the target data
  * @param data store sequence content
  * @param name store sequence name
- * @return multiple sequence stored in vector 
-*/
-void read_data(const char* data_path, std::vector<std::string>& data, std::vector<std::string>& name, bool verbose);
+ * @param verbose print status messages when true
+ * @param sanitize_sequence normalize non-ACGTU characters to 'N' when true
+ * @return multiple sequence stored in vector
+ */
+void read_data(const char* data_path, std::vector<std::string>& data, std::vector<std::string>& name, bool verbose, bool sanitize_sequence = true);
 
 /**
  * @brief: Check whether the file exists in the specified path.

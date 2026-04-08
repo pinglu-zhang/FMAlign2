@@ -49,7 +49,7 @@ double Timer::elapsed_time() const {
  * @param name store sequence name
  * @return multiple sequence stored in vector 
 */
-void read_data(const char* data_path, std::vector<std::string>& data, std::vector<std::string>& name, bool verbose = true){
+void read_data(const char* data_path, std::vector<std::string>& data, std::vector<std::string>& name, bool verbose, bool sanitize_sequence){
     if (verbose && global_args.verbose) {
         std::cout << "#                   Reading Data...                         #" << std::endl;
         print_table_divider();
@@ -81,7 +81,7 @@ void read_data(const char* data_path, std::vector<std::string>& data, std::vecto
     // stop loop when tmp_length equals -1
     while ((tmp_length = kseq_read(file_t)) >= 0) // Read one sequence in each iteration of the loop
     {
-        std::string tmp_data = clean_sequence(file_t -> seq.s);
+        std::string tmp_data = sanitize_sequence ? clean_sequence(file_t->seq.s) : std::string(file_t->seq.s);
         std::string tmp_name = file_t -> name.s;
         if(file_t->comment.s) tmp_name += file_t->comment.s;
         data.push_back(tmp_data);
